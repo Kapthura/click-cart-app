@@ -1,11 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:glamour_grove_cosmetics_app/models/logged_user.dart';
 import 'package:logger/logger.dart';
+import 'package:get/get.dart';
 
 import 'package:flutter_svg/svg.dart';
+import '../../controllers/auth_controller.dart';
 import '../../services/auth_service.dart';
 import '../../utils/form_field_validator.dart' as ffv;
 import '../common_widgets/custom_snack_bar.dart';
-import '../home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _loginFormKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final AuthController _authController = Get.find<AuthController>();
   final ffv.FormFieldValidator _formFieldValidator = ffv.FormFieldValidator();
   final _logger = Logger();
   bool isLoading = false;
@@ -35,6 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Login'),
         centerTitle: true,
       ),
@@ -104,8 +109,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: _login,
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(8.0), // Border radius
+                                  borderRadius: BorderRadius.circular(
+                                      8.0), // Border radius
                                 ),
                               ),
                               child: const Text('Login'),
@@ -125,8 +130,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: _loginWithGoogle,
                               style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(8.0), // Border radius
+                                  borderRadius: BorderRadius.circular(
+                                      8.0), // Border radius
                                 ),
                               ),
                               child: Row(
@@ -165,19 +170,23 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         isLoading = true;
       });
+
       final user = await _auth.loginUserWithEmailAndPassword(
           _emailController.text, _passwordController.text);
 
       setState(() {
         isLoading = false;
       });
+
       if (user != null) {
         _logger.i(user.toString());
         clearForm();
-        if (!mounted) return;
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        await saveLoggedUser(user);
+        _authController.loggedUser.value = LoggedUser(
+            isLoggedIn: true,
+            displayName: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL
         );
       } else {
         if (!mounted) return;
@@ -187,6 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
+
 
   Future<void> _loginWithGoogle() async {
     setState(() {
@@ -199,10 +209,12 @@ class _LoginScreenState extends State<LoginScreen> {
     if (user != null) {
       _logger.i(user.toString());
       clearForm();
-      if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      saveLoggedUser(user);
+      _authController.loggedUser.value = LoggedUser(
+          isLoggedIn: true,
+          displayName: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL
       );
     } else {
       if (!mounted) return;
@@ -210,6 +222,16 @@ class _LoginScreenState extends State<LoginScreen> {
           messageBackgroundColor: Colors.redAccent.shade400,
           message: "Opps! That went wrong, Please try again in few minutes");
     }
+  }
+
+  Future<void> saveLoggedUser(User user) async {
+    LoggedUser loggedUser = LoggedUser(
+        isLoggedIn: true,
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL);
+    _logger.i(loggedUser.toJson());
+   await _authController.login(loggedUser);
   }
 
   void clearForm() {
