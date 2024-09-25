@@ -24,8 +24,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         Get.arguments as Product? ?? Product(); // Use default or handle null
     _imageFuture = _fetchImages();
     _pageController.addListener(() {
-      setState(() {
-      });
+      setState(() {});
     });
   }
 
@@ -43,13 +42,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(product.title ?? '')),
+      appBar: AppBar(
+        title: const Text('ClickCart'),
+        centerTitle: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image Carousel Section
             Stack(
               alignment: Alignment.center,
               children: [
@@ -57,14 +58,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   future: _imageFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      // Return a fixed-height container while loading
                       return Container(
                         height: 200, // Keep the height fixed
                         width: double.infinity,
                         color: Colors.grey[200], // Optional background color
-                        child: const Center(
-                            child:
-                                CircularProgressIndicator()), // Center loading indicator
+                        child: const Center(child: CircularProgressIndicator()),
                       );
                     }
                     if (snapshot.hasError) {
@@ -72,28 +70,48 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     }
                     final images = snapshot.data ?? [];
 
-                    return CarouselSlider.builder(
-                      itemCount: images.length,
-                      itemBuilder: (context, index, realIndex) {
-                        final image = images[index];
-                        return Image.network(
-                          image,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset('assets/images/dummy.png');
-                          },
-                        );
-                      },
-                      options: CarouselOptions(
+                    if (images.isEmpty) {
+                      return Container(
                         height: 200,
-                        autoPlay: true,
-                        viewportFraction: 1.0,
-                        onPageChanged: (index, reason) {
-                          setState(() {
-                          });
+                        width: double.infinity,
+                        color: Colors.grey[200],
+                        child: Center(
+                            child: Image.asset('assets/images/dummy.png')),
+                      );
+                    } else if (images.length == 1) {
+                      // Show a single image
+                      return Image.network(
+                        images[0],
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset('assets/images/dummy.png');
                         },
-                      ),
-                    );
+                        height: 200,
+                        width: double.infinity,
+                      );
+                    } else {
+                      return CarouselSlider.builder(
+                        itemCount: images.length,
+                        itemBuilder: (context, index, realIndex) {
+                          final image = images[index];
+                          return Image.network(
+                            image,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset('assets/images/dummy.png');
+                            },
+                          );
+                        },
+                        options: CarouselOptions(
+                          height: 200,
+                          autoPlay: true,
+                          viewportFraction: 1.0,
+                          onPageChanged: (index, reason) {
+                            setState(() {});
+                          },
+                        ),
+                      );
+                    }
                   },
                 ),
               ],
@@ -101,10 +119,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             const SizedBox(height: 16),
             // Details Section
             Card(
-              color: Colors.white, // Light background for details
+              color: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(12), // Rounded corners for details
+                borderRadius: BorderRadius.circular(12),
               ),
               elevation: 4,
               child: Padding(
@@ -112,19 +129,32 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Rating and Price
+                    Text(
+                      '${product.title}',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    Text(
+                      '${product.brand}',
+                      style: const TextStyle(fontSize: 18),
+                    ),
                     Row(
                       children: [
                         Text(
-                          'Rating: ${product.rating}',
+                          '${((product.rating ?? 0) * 10).round() / 10.0}',
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 18),
                         ),
-                        const SizedBox(width: 4.0),
+                        const SizedBox(width: 6.0),
                         Row(
                           children: List.generate(5, (index) {
+                            final roundedRating =
+                                ((product.rating ?? 0) * 10).round() / 10.0;
+
                             return Icon(
-                              index < (product.rating ?? 0).toInt()
+                              index <
+                                      roundedRating
+                                          .toInt() // Use the rounded rating for comparison
                                   ? Icons.star
                                   : Icons.star_border,
                               color: Colors.amber,
@@ -136,7 +166,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Price: \$${product.price}',
+                      '\$${product.price}',
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 18),
                     ),

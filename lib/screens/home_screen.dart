@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Glamour Grove'),
+        title: const Text('ClickCart'),
         centerTitle: true,
       ),
       drawer: const CustomDrawer(),
@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: productController.productList.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.75,
+              childAspectRatio: 0.68,
             ),
             itemBuilder: (context, index) {
               var product = productController.productList[index];
@@ -44,16 +44,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     margin: const EdgeInsets.all(5.0),
                     child: Card(
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(16), // Rounded corners
+                        borderRadius: BorderRadius.circular(16), // Rounded corners
                       ),
                       elevation: 4,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(16)),
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                             child: SizedBox(
                               height: 150,
                               width: double.infinity,
@@ -62,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   // Product image
                                   Image.network(
                                     product.thumbnail ?? '',
-                                    fit: BoxFit.cover,
+                                    fit: BoxFit.contain,
                                     width: double.infinity,
                                     errorBuilder: (context, error, stackTrace) {
                                       return Image.asset(
@@ -86,49 +84,45 @@ class _HomeScreenState extends State<HomeScreen> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               ),
-                              maxLines: 1, // Limit title to one line
-                              overflow: TextOverflow
-                                  .ellipsis, // Add ellipsis if title is too long
+                              maxLines: 2, // Limit title to one line
+                              overflow: TextOverflow.ellipsis, // Add ellipsis if title is too long
                             ),
                           ),
 
                           // Product brand and verified icon
-                          product.brand != null && product.brand!.isNotEmpty
-                              ? Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        // Make the row flexible
-                                        child: Text(
-                                          product.brand ?? '',
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.grey[600]),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                      const Icon(Icons.verified,
-                                          color: Colors.blue, size: 16),
-                                    ],
+                          if (product.brand != null && product.brand!.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    // Make the row flexible
+                                    child: Text(
+                                      product.brand ?? '',
+                                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
-                                )
-                              : const SizedBox(),
+                                  const Icon(Icons.verified, color: Colors.blue, size: 16),
+                                ],
+                              ),
+                            ),
 
                           // Price information
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 4.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                             child: Row(
                               children: [
-                                Text(
-                                  '\$${product.price}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                    color: Colors.black,
+                                Flexible( // Use Flexible to ensure text stays within bounds
+                                  child: Text(
+                                    '\$${product.price}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                    ),
+                                    overflow: TextOverflow.ellipsis, // Add ellipsis if text is too long
                                   ),
                                 ),
                               ],
@@ -137,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
+
                   ));
             },
           ),

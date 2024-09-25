@@ -54,15 +54,6 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                const Text(
-                  'Glamour Grove Cosmetics',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 28.0,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF149EDD), // Bluish color
-                  ),
-                ),
                 AspectRatio(
                   aspectRatio: 4 / 3,
                   child: Image.asset(
