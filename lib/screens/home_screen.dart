@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
             itemCount: productController.productList.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.68,
+              childAspectRatio: 0.64,
             ),
             itemBuilder: (context, index) {
               var product = productController.productList[index];
@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               product.title ?? '',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                                fontSize: 13,
                               ),
                               maxLines: 2, // Limit title to one line
                               overflow: TextOverflow.ellipsis, // Add ellipsis if title is too long
@@ -99,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     // Make the row flexible
                                     child: Text(
                                       product.brand ?? '',
-                                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -108,8 +108,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ],
                               ),
                             ),
-
-                          // Price information
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                             child: Row(

@@ -44,11 +44,18 @@ dependencies:
   connectivity_plus: ^6.0.5
   http: ^1.2.2
   carousel_slider: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/app_icon.png"
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   logger: ^2.0.2+1
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -99,3 +106,4 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
