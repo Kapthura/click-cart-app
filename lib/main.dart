@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:glamour_grove_cosmetics_app/screens/auth/login_screen.dart';
 import 'package:glamour_grove_cosmetics_app/screens/home_screen.dart';
+import 'package:glamour_grove_cosmetics_app/screens/product_detail_screen.dart';
 import 'package:glamour_grove_cosmetics_app/utils/network_utils.dart';
 
 import 'controllers/auth_controller.dart';
@@ -35,7 +36,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login', // Define the initial route
       getPages: [
         GetPage(name: '/login', page: () => const LoginScreen()), // Define login screen
-        GetPage(name: '/home', page: () => const HomeScreen()),   // Define home screen
+        GetPage(name: '/home', page: () => const HomeScreen()),
+        GetPage(name: '/productDetail', page: () => const ProductDetailScreen()),// Define home screen
       ],
     );
   }
