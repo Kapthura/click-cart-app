@@ -2,14 +2,15 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../models/logged_user.dart';
+import '../utils/network_utils.dart';
 
 class AuthController extends GetxController {
-  Rxn<LoggedUser> loggedUser = Rxn<LoggedUser>(); // Observable for LoggedUser
+  Rxn<LoggedUser> loggedUser = Rxn<LoggedUser>();
 
   @override
   void onInit() {
     super.onInit();
-    checkLoginStatus(); // Check login status on app start
+    checkLoginStatus(); // Now called directly without waiting for frame rendering.
   }
 
   // Check login status from SharedPreferences
@@ -18,37 +19,45 @@ class AuthController extends GetxController {
     String? loggedUserData = prefs.getString('LoggedUser');
 
     if (loggedUserData != null) {
-      // If there is logged user data, decode it to LoggedUser object
+      // Decode user data
       final jsonData = jsonDecode(loggedUserData);
       loggedUser.value = LoggedUser.fromJson(jsonData);
 
+      // User is logged in, proceed to home, but first check internet connectivity
       if (loggedUser.value?.isLoggedIn == true) {
-        Get.offAllNamed('/home');
+        // Check internet connection in the background
+        await _checkInternetAndNavigate('/home');
       } else {
         Get.offAllNamed('/login');
       }
     } else {
+      // If no logged user data, navigate to login screen
       Get.offAllNamed('/login');
     }
   }
 
-  // Function to log in the user and save data to SharedPreferences
-  Future<void> login(LoggedUser loggedUser) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    // Save LoggedUser data to SharedPreferences
-    await prefs.setString('LoggedUser', jsonEncode(loggedUser.toJson()));
-
-    Get.offAllNamed('/home'); // Navigate to home screen after login
+  // Check internet and then navigate to the intended screen
+  Future<void> _checkInternetAndNavigate(String route) async {
+    bool isConnected = await NetworkUtils.checkInternetConnectivity();
+    if (isConnected) {
+      Get.offAllNamed(route); // Navigate to the intended screen
+    } else {
+      // Show the login screen but inform the user that there's no internet
+      Get.offAllNamed('/login');
+      Get.snackbar('No Internet', 'You are not connected to the internet.');
+    }
   }
 
-  // Function to log out the user and remove data from SharedPreferences
+  Future<void> login(LoggedUser user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('LoggedUser', jsonEncode(user.toJson()));
+    Get.offAllNamed('/home');
+  }
+
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs
-        .remove('LoggedUser'); // Remove LoggedUser data from SharedPreferences
-
-    loggedUser.value = null; // Clear the loggedUser data
-    Get.offAllNamed('/login'); // Navigate to login screen after logout
+    await prefs.remove('LoggedUser');
+    loggedUser.value = null;
+    Get.offAllNamed('/login');
   }
 }
