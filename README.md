@@ -1,4 +1,4 @@
-# glamour_grove_cosmetics_app
+# click_cart_app
 
 A new Flutter project.
 
