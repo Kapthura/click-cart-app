@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_getters_setters
+
 class LoggedUser {
   bool? _isLoggedIn;
   String? _displayName;

@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   final AuthController _authController = Get.find<AuthController>();
   final ffv.FormFieldValidator _formFieldValidator = ffv.FormFieldValidator();
-  final NetworkUtils _networkUtils = NetworkUtils();
+
   final _logger = Logger();
   bool isLoading = false;
   bool isLoadingGoogle = false;

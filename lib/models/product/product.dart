@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_getters_setters
+
 import 'package:glamour_grove_cosmetics_app/models/product/review.dart';
 
 import 'dimensions.dart';
